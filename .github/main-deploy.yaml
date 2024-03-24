@@ -1,0 +1,27 @@
+name: Deploy Yandex Function
+run-name: ${{ github.actor }} function deploy
+on:
+  push:
+    branches: [ dev, main ]
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        id: sls-func
+        uses: yc-actions/yc-sls-function@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_DEPLOY_JSON_CREDENTIALS }}
+          folder-id: ${{ secrets.YC_FOLDER_ID }}
+          function-name: 'test-aiohttp'
+          runtime: ${{ vars.YC_FUNCTION_PYTHON_RUNTIME }}
+          memory: ${{ vars.YC_FUNCTION_PYTHON_MEMORY }}
+          entrypoint: 'function_app.handler'
+          include: |
+            ./app
+            function_app.py
+            requirements.txt
