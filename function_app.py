@@ -12,8 +12,11 @@ async def hello(req: aiohttp_web.Request):
     else:
         raise aiohttp_web.HTTPException()
 
-    print(body)
     return aiohttp_web.json_response(body)
+
+
+async def get_hello(req: aiohttp_web.Request):
+    return aiohttp_web.json_response({"params": req.query, "path": req.path})
 
 
 async def handler(event: app_types.YFunctionEvent, ctx):
@@ -22,6 +25,7 @@ async def handler(event: app_types.YFunctionEvent, ctx):
 
     server = aiohttp_web.Application()
     server.router.add_post('/api/endpoint', hello)
+    server.router.add_get('/api/endpoint', get_hello)
 
     async with aiohttp_test.TestClient(aiohttp_test.TestServer(server)) as dispatcher:
         async with dispatcher.request(
@@ -33,9 +37,13 @@ async def handler(event: app_types.YFunctionEvent, ctx):
         ) as resp:
             y_responst = {
                 "statusCode": resp.status,
-                "headers": {'Content-Type': 'application/json'},
                 "isBase64Encoded": False,
             }
+
+            if resp.status >= 400:
+                return y_responst
+
+            y_responst["headers"] = {'Content-Type': 'application/json'},
 
             body = await resp.json()
             if body is not None:
