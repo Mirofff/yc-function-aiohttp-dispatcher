@@ -1,4 +1,4 @@
-import logging
+import base64
 
 from aiohttp import web as aiohttp_web, test_utils as aiohttp_test
 
@@ -16,8 +16,8 @@ async def hello(req: aiohttp_web.Request):
 
 
 async def handler(event: app_types.YFunctionEvent, ctx):
-    logging.info(event)
-    logging.info(ctx)
+    print(event)
+    print(ctx)
 
     server = aiohttp_web.Application()
     server.router.add_post('/api/endpoint', hello)
@@ -27,13 +27,13 @@ async def handler(event: app_types.YFunctionEvent, ctx):
             event['httpMethod'],
             event['url'],
             params=event['multiValueQueryStringParameters'],
-            json=event['body'],
+            data=(base64.b64decode(event['body']) if event['isBase64Encoded'] else event['body']),
             headers=event['headers'],
         ) as resp:
             return {
                 "statusCode": 200,
                 "headers": {'Content-Type': 'application/json'},
                 "multiValueHeaders": {},
-                "body": await resp.json(),
+                "body": await resp.json() if resp.status in (200, 201,) else "",
                 "isBase64Encoded": False,
             }
