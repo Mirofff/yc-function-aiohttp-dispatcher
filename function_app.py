@@ -1,4 +1,5 @@
 import base64
+import json
 
 from aiohttp import web as aiohttp_web, test_utils as aiohttp_test
 
@@ -34,6 +35,6 @@ async def handler(event: app_types.YFunctionEvent, ctx):
                 "statusCode": 200,
                 "headers": {'Content-Type': 'application/json'},
                 "multiValueHeaders": {},
-                "body": await resp.json() if resp.status in (200, 201,) else "",
+                "body": json.dumps(await resp.json()) if resp.status in (200, 201,) else None,
                 "isBase64Encoded": False,
             }
