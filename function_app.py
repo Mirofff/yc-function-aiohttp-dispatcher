@@ -16,7 +16,7 @@ async def hello(req: aiohttp_web.Request):
 
 
 async def get_hello(req: aiohttp_web.Request):
-    return aiohttp_web.json_response({"params": req.query, "path": req.path})
+    return aiohttp_web.json_response({"req": req.__dict__})
 
 
 async def handler(event: app_types.YFunctionEvent, ctx):
