@@ -37,8 +37,8 @@ async def handler(event: app_types.YFunctionEvent, ctx):
                 "isBase64Encoded": False,
             }
 
-            body = json.dumps(await resp.json())
+            body = await resp.json()
             if body is not None:
-                y_responst['body'] = body
+                y_responst['body'] = json.dumps(body)
 
             return y_responst
