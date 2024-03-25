@@ -16,5 +16,5 @@ class YFunctionEvent(t.TypedDict):
 class YFunctionResponse(t.TypedDict):
     statusCode: int
     headers: dict
-    body: str | bytes
     isBase64Encoded: bool
+    body: str | bytes | None

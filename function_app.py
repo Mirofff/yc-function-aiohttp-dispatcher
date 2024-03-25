@@ -31,10 +31,14 @@ async def handler(event: app_types.YFunctionEvent, ctx):
             data=(base64.b64decode(event['body']) if event['isBase64Encoded'] else event['body']),
             headers=event['headers'],
         ) as resp:
-            return {
-                "statusCode": 200,
+            y_responst = {
+                "statusCode": resp.status,
                 "headers": {'Content-Type': 'application/json'},
-                "multiValueHeaders": {},
-                "body": json.dumps(await resp.json()) if resp.status in (200, 201,) else None,
                 "isBase64Encoded": False,
             }
+
+            body = json.dumps(await resp.json())
+            if body is not None:
+                y_responst['body'] = body
+
+            return y_responst
